@@ -9,9 +9,11 @@ const PORT = 8080;
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 
+// Make the 'assets' folder available to the served pages
+app.use("/assets", express.static(path.join(__dirname, "/public/assets")));
 
 
-
+// --------------------------------------------------
 // Routes
 // --------------------------------------------------
 
@@ -31,9 +33,18 @@ app.get("*", function(req, res){
 
 
 // POST
+app.post("/api/notes", function(req, res){
+    console.log(req.body);
 
+    res.json("Posted!");
+});
 
+// DELETE
+app.delete("/api/notes/:id", function (req, res) {
+    res.json("Delete Request!");
+});
 
+// ------------------------------------------------------
 
 
 
