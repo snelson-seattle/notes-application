@@ -1,5 +1,8 @@
 const express = require("express");
 const path = require("path");
+const fs = require("fs");
+const Note = require("./note");
+const notes = JSON.parse(fs.readFileSync("./db/db.json")); // Load saved notes
 
 // Set up the Express Server
 const app = express();
@@ -23,7 +26,7 @@ app.get("/notes", function(req, res){
 });
 
 app.get("/api/notes", function(req, res){
-    return res.json("Hello World!"); // temporary route test
+    return res.sendFile(path.join(__dirname, "/db/db.json").toString());
 });
 
 // Catchall GET route
@@ -34,19 +37,31 @@ app.get("*", function(req, res){
 
 // POST
 app.post("/api/notes", function(req, res){
-    console.log(req.body);
+    // make a new note from request data
+    let note = new Note(req.body.title, req.body.text);
+    fs.writeFileSync("./db/noteId.txt", note.id); // record the note id for next time server restarts
 
-    res.json("Posted!");
+    // Add new note to existing notes
+    notes.push(note);    
+
+    // Save the note to database
+    fs.writeFileSync("./db/db.json", JSON.stringify(notes));
+
+    return res.json("Note saved successfully.");
 });
 
 // DELETE
 app.delete("/api/notes/:id", function (req, res) {
-    res.json("Delete Request!");
+   return res.json("Delete Request!");
 });
 
+// End of Routes
 // ------------------------------------------------------
 
 
+const savedNotes = fs.readFile("./db/db.json", function(err){
+    if(err) throw err;           
+});
 
 // Start the server
 app.listen(PORT, function(){
