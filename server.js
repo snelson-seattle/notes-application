@@ -52,7 +52,14 @@ app.post("/api/notes", function(req, res){
 
 // DELETE
 app.delete("/api/notes/:id", function (req, res) {
-   return res.json("Delete Request!");
+   let id = req.params.id;
+   for(let i = notes.length - 1; i >= 0; i--){
+       if(notes[i].id == id){
+           notes.splice(i, 1);
+       }
+   }
+   fs.writeFileSync("./db/db.json", JSON.stringify(notes));
+   return res.json("Delete successful!");
 });
 
 // End of Routes
